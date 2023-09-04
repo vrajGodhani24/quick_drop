@@ -1,5 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:quick_drop/controllers/loginController.dart';
+import 'package:quick_drop/utils/showMessage.dart';
 
 class SignUpSignIn extends StatelessWidget {
   const SignUpSignIn({super.key});
@@ -7,10 +10,13 @@ class SignUpSignIn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+
+    LoginController loginController = Get.put(LoginController());
+
     return Scaffold(
       body: Center(
         child: Container(
-          height: size.height / 1.8,
+          height: size.height / 1.6,
           width: size.width / 1.3,
           decoration: BoxDecoration(
             color: Colors.lightBlue.withOpacity(0.1),
@@ -100,6 +106,45 @@ class SignUpSignIn extends StatelessWidget {
                               ),
                             ),
                           ),
+                        ),
+                        const SizedBox(height: 30),
+                        Obx(
+                          () => (loginController.isLoading.value)
+                              ? const CircularProgressIndicator()
+                              : SizedBox(
+                                  width: size.width / 1.8,
+                                  height: size.height / 18,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                          Colors.red.withOpacity(0.5),
+                                    ),
+                                    onPressed: () async {
+                                      loginController.buttonLoading();
+                                      User? user = await loginController
+                                          .loginWithGoogle();
+
+                                      if (user != null) {
+                                        Global.snackMassage(
+                                            'Login',
+                                            'Login successfully...',
+                                            Colors.green.withOpacity(0.25));
+                                        Get.offAllNamed('homepage');
+                                        loginController.buttonLoading();
+                                        loginController.sharedPreferences
+                                            .setBool('login', true);
+                                      }
+                                    },
+                                    child: const Text(
+                                      "Google",
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
                         ),
                       ],
                     ),

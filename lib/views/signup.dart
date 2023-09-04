@@ -1,30 +1,27 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quick_drop/controllers/signUpController.dart';
+import 'package:quick_drop/utils/showMessage.dart';
 
 class SignUp extends StatelessWidget {
   const SignUp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    GlobalKey<FormState> signUpFormKey = GlobalKey<FormState>();
-    TextEditingController usernameController = TextEditingController();
-    TextEditingController emailController = TextEditingController();
-    TextEditingController newPasswordController = TextEditingController();
-    TextEditingController confirmPasswordController = TextEditingController();
-
     Size size = MediaQuery.of(context).size;
 
     SignUpController signUpController = Get.put(SignUpController());
 
     return Scaffold(
       appBar: AppBar(
+        centerTitle: false,
         title: const Text("Sign Up"),
       ),
       body: Container(
         alignment: Alignment.center,
         child: Container(
-          height: size.height / 1.45,
+          height: size.height / 1.5,
           width: size.width / 1.3,
           decoration: BoxDecoration(
             color: Colors.lightBlue.withOpacity(0.1),
@@ -60,15 +57,13 @@ class SignUp extends StatelessWidget {
               Expanded(
                 flex: 10,
                 child: Form(
-                  key: signUpFormKey,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    mainAxisSize: MainAxisSize.min,
+                  key: signUpController.signUpFormKey,
+                  child: ListView(
                     children: [
                       ListTile(
                         leading: const Icon(Icons.perm_contact_cal),
                         title: TextFormField(
-                          controller: usernameController,
+                          controller: signUpController.usernameController,
                           validator: (val) {
                             if (val!.isEmpty) {
                               return "Enter username first";
@@ -83,13 +78,14 @@ class SignUp extends StatelessWidget {
                       ListTile(
                         leading: const Icon(Icons.person),
                         title: TextFormField(
-                          controller: emailController,
+                          controller: signUpController.emailController,
                           validator: (val) {
                             if (val!.isEmpty) {
                               return "Enter email id first";
                             }
                             return null;
                           },
+                          keyboardType: TextInputType.emailAddress,
                           decoration: const InputDecoration(
                             hintText: "Email id",
                           ),
@@ -109,11 +105,12 @@ class SignUp extends StatelessWidget {
                         ),
                         title: Obx(
                           () => TextFormField(
-                            controller: newPasswordController,
+                            controller: signUpController.newPasswordController,
                             validator: (val) {
                               if (val!.isEmpty) {
                                 return "Enter password first";
-                              } else if (confirmPasswordController.text !=
+                              } else if (signUpController
+                                      .confirmPasswordController.text !=
                                   val) {
                                 return "Both password are not match";
                               }
@@ -144,11 +141,14 @@ class SignUp extends StatelessWidget {
                         ),
                         title: Obx(
                           () => TextFormField(
-                            controller: confirmPasswordController,
+                            controller:
+                                signUpController.confirmPasswordController,
                             validator: (val) {
                               if (val!.isEmpty) {
                                 return "Enter confirm password first";
-                              } else if (newPasswordController.text != val) {
+                              } else if (signUpController
+                                      .newPasswordController.text !=
+                                  val) {
                                 return "Both password are not match";
                               }
                               return null;
@@ -167,27 +167,49 @@ class SignUp extends StatelessWidget {
                       const SizedBox(height: 30),
                       Column(
                         children: [
-                          SizedBox(
-                            width: size.width / 1.8,
-                            height: size.height / 18,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blue.withOpacity(0.5),
-                              ),
-                              onPressed: () {
-                                if (signUpFormKey.currentState!.validate()) {
-                                  Get.offNamed('login');
-                                }
-                              },
-                              child: const Text(
-                                "Sign Up",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
+                          Obx(
+                            () => (signUpController.isLoading.value)
+                                ? const CircularProgressIndicator()
+                                : SizedBox(
+                                    width: size.width / 1.8,
+                                    height: size.height / 18,
+                                    child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor:
+                                              Colors.blue.withOpacity(0.5),
+                                        ),
+                                        onPressed: () async {
+                                          if (signUpController
+                                              .signUpFormKey.currentState!
+                                              .validate()) {
+                                            signUpController.buttonLoading();
+                                            User? user = await signUpController
+                                                .createAccountWithUserPassword(
+                                                    signUpController
+                                                        .emailController.text,
+                                                    signUpController
+                                                        .confirmPasswordController
+                                                        .text);
+
+                                            if (user != null) {
+                                              Global.snackMassage(
+                                                  'Sign Up',
+                                                  'Sign up successfully',
+                                                  Colors.green
+                                                      .withOpacity(0.25));
+                                              Get.offNamed('signUpSignIn');
+                                            }
+                                          }
+                                        },
+                                        child: const Text(
+                                          "Sign Up",
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        )),
+                                  ),
                           ),
                           const SizedBox(height: 30),
                           const Text("Already have an account?"),

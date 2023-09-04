@@ -1,5 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:quick_drop/controllers/loginController.dart';
+import 'package:quick_drop/utils/showMessage.dart';
 
 class LogIn extends StatelessWidget {
   const LogIn({super.key});
@@ -8,8 +11,11 @@ class LogIn extends StatelessWidget {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
 
+    LoginController loginController = Get.put(LoginController());
+
     return Scaffold(
       appBar: AppBar(
+        centerTitle: false,
         title: const Text("Login"),
       ),
       body: Center(
@@ -52,50 +58,106 @@ class LogIn extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    Column(
-                      children: [
-                        ListTile(
-                          leading: const Icon(Icons.person),
-                          title: TextFormField(
-                            decoration: const InputDecoration(
-                              hintText: "Enter your email",
-                              label: Text("Email"),
-                            ),
-                          ),
-                        ),
-                        ListTile(
-                          leading: const Icon(Icons.remove_red_eye),
-                          title: TextFormField(
-                            obscureText: true,
-                            decoration: const InputDecoration(
-                              hintText: "Enter your password",
-                              label: Text("Password"),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        SizedBox(
-                          width: size.width / 1.8,
-                          height: size.height / 18,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue.withOpacity(0.5),
-                            ),
-                            onPressed: () {
-                              Get.offAllNamed('homepage');
-                            },
-                            child: const Text(
-                              "Login",
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
+                    Form(
+                      key: loginController.loginFormKey,
+                      child: Column(
+                        children: [
+                          ListTile(
+                            leading: const Icon(Icons.person),
+                            title: TextFormField(
+                              controller: loginController.emailController,
+                              validator: (val) {
+                                if (val!.isEmpty) {
+                                  return "Enter email first";
+                                }
+                                return null;
+                              },
+                              keyboardType: TextInputType.emailAddress,
+                              decoration: const InputDecoration(
+                                hintText: "Enter your email",
                               ),
                             ),
                           ),
+                          ListTile(
+                            leading: Obx(
+                              () => GestureDetector(
+                                onTap: () {
+                                  loginController.passwordVisible();
+                                },
+                                child: (loginController.showPassword.value)
+                                    ? const Icon(Icons.remove_red_eye)
+                                    : const Icon(Icons.remove_red_eye_outlined),
+                              ),
+                            ),
+                            title: Obx(
+                              () => TextFormField(
+                                validator: (val) {
+                                  if (val!.isEmpty) {
+                                    return "Enter password first";
+                                  }
+                                  return null;
+                                },
+                                controller: loginController.passwordController,
+                                obscureText:
+                                    (loginController.showPassword.value)
+                                        ? false
+                                        : true,
+                                decoration: const InputDecoration(
+                                  hintText: "Enter your password",
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Column(
+                      children: [
+                        Obx(
+                          () => (loginController.isLoading.value)
+                              ? const CircularProgressIndicator()
+                              : SizedBox(
+                                  width: size.width / 1.8,
+                                  height: size.height / 18,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                          Colors.blue.withOpacity(0.5),
+                                    ),
+                                    onPressed: () async {
+                                      if (loginController
+                                          .loginFormKey.currentState!
+                                          .validate()) {
+                                        loginController.buttonLoading();
+                                        User? user = await loginController
+                                            .loginWithUserPassword(
+                                                loginController
+                                                    .emailController.text,
+                                                loginController
+                                                    .passwordController.text);
+
+                                        if (user != null) {
+                                          Global.snackMassage(
+                                              'Login',
+                                              'Login successfully...',
+                                              Colors.green.withOpacity(0.25));
+                                          Get.offAllNamed('homepage');
+                                          loginController.buttonLoading();
+                                          loginController.sharedPreferences
+                                              .setBool('login', true);
+                                        }
+                                      }
+                                    },
+                                    child: const Text(
+                                      "Login",
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
                         ),
                         const SizedBox(height: 30),
                         const Text("You don't have any account?"),
