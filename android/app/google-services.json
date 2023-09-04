@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "718044139435",
+    "project_id": "quickdrop-19299",
+    "storage_bucket": "quickdrop-19299.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:718044139435:android:dd102c60d175ffb67d8cee",
+        "android_client_info": {
+          "package_name": "com.example.quick_drop"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "718044139435-42jakvqnv4nlfdfcta81emh3ol92tb60.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAoiBfXzTMi-VoWnWBrwlvGEcW_KjgW37I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "718044139435-42jakvqnv4nlfdfcta81emh3ol92tb60.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
