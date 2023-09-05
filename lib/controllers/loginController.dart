@@ -9,6 +9,7 @@ class LoginController extends GetxController {
   RxBool showPassword = false.obs;
   RxBool isLoading = false.obs;
   bool isLogin = false;
+
   GlobalKey<FormState> loginFormKey = GlobalKey<FormState>();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -82,12 +83,5 @@ class LoginController extends GetxController {
       buttonLoading();
     }
     return null;
-  }
-
-  Future<void> logOut() async {
-    await firebaseAuth.signOut();
-    await googleSignIn.signOut();
-    Get.offAllNamed('signUpSignIn');
-    sharedPreferences.setBool('login', false);
   }
 }

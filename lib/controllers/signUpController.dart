@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
@@ -8,7 +9,7 @@ class SignUpController extends GetxController {
   RxBool showConfirmPassword = false.obs;
   RxBool isLoading = false.obs;
   GlobalKey<FormState> signUpFormKey = GlobalKey<FormState>();
-  TextEditingController usernameController = TextEditingController();
+  // TextEditingController usernameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController newPasswordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
@@ -20,7 +21,6 @@ class SignUpController extends GetxController {
     super.onClose();
     signUpFormKey.currentState!.reset();
 
-    usernameController.clear();
     emailController.clear();
     newPasswordController.clear();
     confirmPasswordController.clear();
@@ -39,7 +39,7 @@ class SignUpController extends GetxController {
   }
 
   Future<User?> createAccountWithUserPassword(
-      String email, String password) async {
+      {required String email, required String password}) async {
     try {
       UserCredential createUser = await firebaseAuth
           .createUserWithEmailAndPassword(email: email, password: password);
@@ -53,5 +53,20 @@ class SignUpController extends GetxController {
       buttonLoading();
     }
     return null;
+    // ListTile(
+    //   leading: const Icon(Icons.perm_contact_cal),
+    //   title: TextFormField(
+    //     controller: signUpController.usernameController,
+    //     validator: (val) {
+    //       if (val!.isEmpty) {
+    //         return "Enter username first";
+    //       }
+    //       return null;
+    //     },
+    //     decoration: const InputDecoration(
+    //       hintText: "Username",
+    //     ),
+    //   ),
+    // ),
   }
 }

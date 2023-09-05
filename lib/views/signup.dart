@@ -21,7 +21,7 @@ class SignUp extends StatelessWidget {
       body: Container(
         alignment: Alignment.center,
         child: Container(
-          height: size.height / 1.5,
+          height: size.height / 1.8,
           width: size.width / 1.3,
           decoration: BoxDecoration(
             color: Colors.lightBlue.withOpacity(0.1),
@@ -60,21 +60,6 @@ class SignUp extends StatelessWidget {
                   key: signUpController.signUpFormKey,
                   child: ListView(
                     children: [
-                      ListTile(
-                        leading: const Icon(Icons.perm_contact_cal),
-                        title: TextFormField(
-                          controller: signUpController.usernameController,
-                          validator: (val) {
-                            if (val!.isEmpty) {
-                              return "Enter username first";
-                            }
-                            return null;
-                          },
-                          decoration: const InputDecoration(
-                            hintText: "Username",
-                          ),
-                        ),
-                      ),
                       ListTile(
                         leading: const Icon(Icons.person),
                         title: TextFormField(
@@ -185,11 +170,12 @@ class SignUp extends StatelessWidget {
                                             signUpController.buttonLoading();
                                             User? user = await signUpController
                                                 .createAccountWithUserPassword(
-                                                    signUpController
-                                                        .emailController.text,
-                                                    signUpController
-                                                        .confirmPasswordController
-                                                        .text);
+                                              email: signUpController
+                                                  .emailController.text,
+                                              password: signUpController
+                                                  .confirmPasswordController
+                                                  .text,
+                                            );
 
                                             if (user != null) {
                                               Global.snackMassage(
