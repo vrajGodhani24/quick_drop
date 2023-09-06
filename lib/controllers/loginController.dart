@@ -1,8 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:quick_drop/utils/showMessage.dart';
+import 'package:quick_drop/utils/global.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginController extends GetxController {
@@ -17,6 +18,7 @@ class LoginController extends GetxController {
   static final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   static final GoogleSignIn googleSignIn = GoogleSignIn();
 
+  static final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
   late final SharedPreferences sharedPreferences;
 
   @override
@@ -24,14 +26,16 @@ class LoginController extends GetxController {
     super.onInit();
     sharedPreferences = await SharedPreferences.getInstance();
 
-    isLogin = sharedPreferences.getBool('login')!;
+    bool? fetchBoolData = sharedPreferences.getBool('login');
+
+    if (fetchBoolData != null) {
+      isLogin = fetchBoolData;
+    }
   }
 
   @override
   void onClose() {
     super.onClose();
-    loginFormKey.currentState!.reset();
-
     emailController.clear();
     passwordController.clear();
   }
@@ -76,6 +80,22 @@ class LoginController extends GetxController {
 
       User? user = userCredential.user;
 
+      if (user != null) {
+        QuerySnapshot<Map<String, dynamic>> fetchUserData =
+            await firebaseFirestore.collection('users').get();
+        List<QueryDocumentSnapshot<Map<String, dynamic>>> fetchUserList =
+            fetchUserData.docs;
+
+        int bug = 0;
+        fetchUserList.map((element) {
+          if (element['email'] == user.email) {
+            bug++;
+          }
+        });
+        if (bug == 0) {
+          Global.countUserForGoogleUser(email: user.email!);
+        }
+      }
       return user;
     } on FirebaseAuthException catch (error) {
       Global.snackMassage(

@@ -2,12 +2,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
-import 'package:quick_drop/utils/showMessage.dart';
+import 'package:quick_drop/utils/global.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignUpController extends GetxController {
   RxBool showPassword = false.obs;
   RxBool showConfirmPassword = false.obs;
   RxBool isLoading = false.obs;
+
+  bool isLogin = false;
+
   GlobalKey<FormState> signUpFormKey = GlobalKey<FormState>();
   // TextEditingController usernameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
@@ -15,12 +19,25 @@ class SignUpController extends GetxController {
   TextEditingController confirmPasswordController = TextEditingController();
 
   static final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+  static final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+
+  late final SharedPreferences sharedPreferences;
+
+  @override
+  void onInit() async {
+    super.onInit();
+    sharedPreferences = await SharedPreferences.getInstance();
+
+    bool? fetchBoolData = sharedPreferences.getBool('login');
+
+    if (fetchBoolData != null) {
+      isLogin = fetchBoolData;
+    }
+  }
 
   @override
   void onClose() {
     super.onClose();
-    signUpFormKey.currentState!.reset();
-
     emailController.clear();
     newPasswordController.clear();
     confirmPasswordController.clear();
@@ -45,6 +62,8 @@ class SignUpController extends GetxController {
           .createUserWithEmailAndPassword(email: email, password: password);
 
       User? user = createUser.user;
+
+      Global.countUserForEmailPasswordUser(email: email, password: password);
 
       return user;
     } on FirebaseAuthException catch (error) {

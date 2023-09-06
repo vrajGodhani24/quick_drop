@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quick_drop/controllers/signUpController.dart';
-import 'package:quick_drop/utils/showMessage.dart';
+import 'package:quick_drop/utils/global.dart';
 
 class SignUp extends StatelessWidget {
   const SignUp({super.key});
@@ -183,6 +183,7 @@ class SignUp extends StatelessWidget {
                                                   'Sign up successfully',
                                                   Colors.green
                                                       .withOpacity(0.25));
+
                                               Get.offNamed('signUpSignIn');
                                             }
                                           }

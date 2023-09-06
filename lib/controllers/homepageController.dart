@@ -8,9 +8,6 @@ class HomePageController extends GetxController {
   RxBool isLoading = false.obs;
   bool isLogin = false;
 
-  int id = 0;
-  int length = 0;
-
   static final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   static final GoogleSignIn googleSignIn = GoogleSignIn();
   late final SharedPreferences sharedPreferences;
@@ -23,11 +20,6 @@ class HomePageController extends GetxController {
     sharedPreferences = await SharedPreferences.getInstance();
 
     isLogin = sharedPreferences.getBool('login')!;
-
-    firebaseFirestore.collection('records').doc('counter').set({
-      'id': id,
-      'length': length,
-    });
   }
 
   void buttonLoading() {
