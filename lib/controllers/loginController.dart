@@ -87,11 +87,11 @@ class LoginController extends GetxController {
             fetchUserData.docs;
 
         int bug = 0;
-        fetchUserList.map((element) {
+        for (var element in fetchUserList) {
           if (element['email'] == user.email) {
             bug++;
           }
-        });
+        }
         if (bug == 0) {
           Global.countUserForGoogleUser(email: user.email!);
         }

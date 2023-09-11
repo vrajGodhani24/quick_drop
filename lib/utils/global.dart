@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -10,6 +11,7 @@ class Global {
     Get.snackbar(title, message, backgroundColor: color);
   }
 
+  static final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   static final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
 
   static void countUserForEmailPasswordUser(
@@ -23,8 +25,10 @@ class Global {
     length = data['length'];
 
     id++;
+    String name = email.split('@')[0];
+
     firebaseFirestore.collection('users').doc('$id').set(
-      {'id': Global.id, 'email': email, 'password': password},
+      {'id': Global.id, 'email': email, 'password': password, 'name': name},
     );
     length++;
     firebaseFirestore.collection('records').doc('counter').set({
@@ -43,8 +47,9 @@ class Global {
     length = data['length'];
 
     id++;
+    String name = email.split('@')[0];
     firebaseFirestore.collection('users').doc('$id').set(
-      {'id': Global.id, 'email': email},
+      {'id': Global.id, 'email': email, 'name': name},
     );
     length++;
     firebaseFirestore.collection('records').doc('counter').set({

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:quick_drop/firebase_options.dart';
+import 'package:quick_drop/views/chat.dart';
 import 'package:quick_drop/views/homepage.dart';
 import 'package:quick_drop/views/login.dart';
 import 'package:quick_drop/views/signUp_signIn.dart';
@@ -27,6 +28,7 @@ void main() async {
         GetPage(name: '/signUpSignIn', page: () => const SignUpSignIn()),
         GetPage(name: '/login', page: () => const LogIn()),
         GetPage(name: '/signup', page: () => const SignUp()),
+        GetPage(name: '/chat', page: () => const ChatPage()),
       ],
     ),
   );
